@@ -1,0 +1,18 @@
+<Project>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
+    <PackageReference Update="Swashbuckle.AspNetCore" Version="6.1.4" />
+    <PackageReference Update="Microsoft.Extensions.Http" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="NUnit" Version="3.13.2" />
+    <PackageReference Update="NUnit3TestAdapter" Version="4.0.0" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.10.0"/>
+    <PackageReference Update="Moq" Version="4.16.1" />
+    <PackageReference Update="FluentAssertions" Version="5.10.3" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <GlobalPackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3" />
+    <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
+  </ItemGroup>
+</Project>
