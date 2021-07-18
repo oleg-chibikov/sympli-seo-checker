@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using OlegChibikov.SympliInterview.SeoChecker.Contracts;
@@ -42,7 +43,8 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
                                 serviceProvider.GetRequiredService<IOptionsMonitor<SearchEngineRetrieverSettings>>(),
                                 serviceProvider.GetRequiredService<Func<SearchEngine, ISearchEngineResultsParser>>(),
                                 serviceProvider.GetRequiredService<Func<SearchEngine, IQueryProvider>>(),
-                                searchEngine)));
+                                searchEngine,
+                                serviceProvider.GetRequiredService<ILogger<SearchEngineResultsRetriever>>())));
                 }
 
                 services.AddSingleton<Func<SearchEngine, ISearchEngineResultsParser>>(

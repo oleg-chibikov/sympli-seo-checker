@@ -25,15 +25,24 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api.Controllers
         [HttpGet("{requestKeywords}/{reference}")]
         public async Task<IEnumerable<SearchEngineReferences>> GetAsync(string requestKeywords = "e-settlements", string reference = "www.sympli.com.au", CancellationToken cancellationToken = default)
         {
-            _ = reference ?? throw new ArgumentNullException(nameof(reference));
             _ = requestKeywords ?? throw new ArgumentNullException(nameof(requestKeywords));
+            _ = reference ?? throw new ArgumentNullException(nameof(reference));
 
-            // TODO: Caching
+            if (string.IsNullOrWhiteSpace(reference))
+            {
+                throw new BusinessException("Empty reference");
+            }
+
+            if (string.IsNullOrWhiteSpace(requestKeywords))
+            {
+                throw new BusinessException("Empty requestKeywords");
+            }
+
             var tasks = _searchEngineResultsRetrievers.Select(
                 async searchEngineResultsRetriever =>
                 {
                     var searchResults = await searchEngineResultsRetriever.GetSearchResultsAsync(requestKeywords, cancellationToken).ConfigureAwait(false);
-                    return new SearchEngineReferences(searchResults.SearchEngine, _referenceMatcher.MatchReferenceToResults(reference, searchResults.WebsiteNames));
+                    return new SearchEngineReferences(searchResults.SearchEngine, _referenceMatcher.MatchReferenceToResults(reference, searchResults.WebsiteNames), searchResults.HasError);
                 });
 
             return await Task.WhenAll(tasks).ConfigureAwait(false);

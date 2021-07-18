@@ -5,6 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestFiles\BingResponse.html" />
+    <None Remove="TestFiles\BingResponseNoData.html" />
+    <None Remove="TestFiles\GoogleResponse.html" />
+    <None Remove="TestFiles\GoogleResponseNoData.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestFiles\BingResponse.html" />
+    <EmbeddedResource Include="TestFiles\BingResponseNoData.html" />
+    <EmbeddedResource Include="TestFiles\GoogleResponse.html" />
+    <EmbeddedResource Include="TestFiles\GoogleResponseNoData.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
