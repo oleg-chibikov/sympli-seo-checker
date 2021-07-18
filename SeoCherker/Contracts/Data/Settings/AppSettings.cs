@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace OlegChibikov.SympliInterview.SeoChecker.Api.Data
+namespace OlegChibikov.SympliInterview.SeoChecker.Contracts.Data.Settings
 {
-    public class AppSettings
+    public sealed class AppSettings
     {
         public string? WebAppHost { get; set; }
 

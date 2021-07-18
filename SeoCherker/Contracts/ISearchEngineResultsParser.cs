@@ -1,13 +1,12 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using OlegChibikov.SympliInterview.SeoChecker.Contracts.Data;
+﻿using System;
+using System.Collections.Generic;
 
 namespace OlegChibikov.SympliInterview.SeoChecker.Contracts
 {
     public interface ISearchEngineResultsParser
     {
-        SearchEngine SearchEngine { get; }
+        IEnumerable<string> ParseResults(string rawResponse);
 
-        Task<SearchEngineReferences> GetReferencesAsync(string requestKeywords, string reference, CancellationToken cancellationToken = default);
+        Uri? ParseNextPageUri(string rawResponse);
     }
 }

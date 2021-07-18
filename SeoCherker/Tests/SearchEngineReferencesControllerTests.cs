@@ -2,7 +2,7 @@ using System;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using OlegChibikov.SympliInterview.SeoChecker.Api.Data;
+using OlegChibikov.SympliInterview.SeoChecker.Contracts.Data.Settings;
 
 namespace OlegChibikov.SympliInterview.SeoChecker.Tests
 {

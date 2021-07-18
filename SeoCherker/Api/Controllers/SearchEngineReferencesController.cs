@@ -13,11 +13,13 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api.Controllers
     [Route("[controller]")]
     public class SearchEngineReferencesController : ControllerBase
     {
-        readonly IEnumerable<ISearchEngineResultsParser> _searchEngineResultsParsers;
+        readonly IEnumerable<ISearchEngineResultsRetriever> _searchEngineResultsRetrievers;
+        readonly IReferenceMatcher _referenceMatcher;
 
-        public SearchEngineReferencesController(IEnumerable<ISearchEngineResultsParser> searchEngineResultsParsers)
+        public SearchEngineReferencesController(IEnumerable<ISearchEngineResultsRetriever> searchEngineResultsRetrievers, IReferenceMatcher referenceMatcher)
         {
-            _searchEngineResultsParsers = searchEngineResultsParsers ?? throw new ArgumentNullException(nameof(searchEngineResultsParsers));
+            _searchEngineResultsRetrievers = searchEngineResultsRetrievers ?? throw new ArgumentNullException(nameof(searchEngineResultsRetrievers));
+            _referenceMatcher = referenceMatcher ?? throw new ArgumentNullException(nameof(referenceMatcher));
         }
 
         [HttpGet("{requestKeywords}/{reference}")]
@@ -27,7 +29,13 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api.Controllers
             _ = requestKeywords ?? throw new ArgumentNullException(nameof(requestKeywords));
 
             // TODO: Caching
-            var tasks = _searchEngineResultsParsers.Select(x => x.GetReferencesAsync(requestKeywords, reference, cancellationToken));
+            var tasks = _searchEngineResultsRetrievers.Select(
+                async searchEngineResultsRetriever =>
+                {
+                    var searchResults = await searchEngineResultsRetriever.GetSearchResultsAsync(requestKeywords, cancellationToken).ConfigureAwait(false);
+                    return new SearchEngineReferences(searchResults.SearchEngine, _referenceMatcher.MatchReferenceToResults(reference, searchResults.WebsiteNames));
+                });
+
             return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }

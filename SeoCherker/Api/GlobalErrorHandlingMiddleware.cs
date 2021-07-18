@@ -3,7 +3,6 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using OlegChibikov.SympliInterview.SeoChecker.Contracts;
 using OlegChibikov.SympliInterview.SeoChecker.Contracts.Data;
 
 namespace OlegChibikov.SympliInterview.SeoChecker.Api
@@ -34,7 +33,7 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
 
                 response.StatusCode = ex switch
                 {
-                    BusinessException => (int)HttpStatusCode.BadRequest,
+                    InvalidOperationException => (int)HttpStatusCode.BadRequest,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 
