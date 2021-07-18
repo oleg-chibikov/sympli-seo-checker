@@ -13,12 +13,12 @@ using IQueryProvider = OlegChibikov.SympliInterview.SeoChecker.Contracts.IQueryP
 
 namespace OlegChibikov.SympliInterview.SeoChecker.Core
 {
-    public sealed class SearchEngineResultsRetriever : ISearchEngineResultsRetriever, IDisposable
+    public sealed class SearchEngineResultsRetriever : ISearchEngineResultsRetriever
     {
-        readonly SearchEngine _searchEngine;
+        readonly string _searchEngineName;
+        readonly IHttpClientFactory _httpClientFactory;
         readonly ISearchEngineResultsParser _searchEngineResultsParser;
         readonly IQueryProvider _queryProvider;
-        readonly HttpClient _httpClient;
         readonly IOptionsMonitor<SearchEngineRetrieverSettings> _optionsMonitor;
 
         public SearchEngineResultsRetriever(
@@ -30,16 +30,16 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Core
         {
             _ = queryProviderResolver ?? throw new ArgumentNullException(nameof(queryProviderResolver));
             _ = searchEngineResultsParserResolver ?? throw new ArgumentNullException(nameof(searchEngineResultsParserResolver));
-            _ = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
 
-            _searchEngine = searchEngine;
+            SearchEngine = searchEngine;
+            _searchEngineName = searchEngine.GetName();
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
             _searchEngineResultsParser = searchEngineResultsParserResolver(searchEngine);
             _queryProvider = queryProviderResolver(searchEngine);
-
-            // httpClient instance can be kept for the lifetime of the class. It's efficient provided that we query the same web address with this instance of httpClient
-            _httpClient = httpClientFactory.CreateClient(searchEngine.GetName());
         }
+
+        public SearchEngine SearchEngine { get; }
 
         public async Task<SearchEngineResults> GetSearchResultsAsync(string requestKeywords, CancellationToken cancellationToken = default)
         {
@@ -53,9 +53,12 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Core
             var allParsedResults = new List<string>();
             var uri = new Uri(_queryProvider.GetRelativeUriPart(HttpUtility.HtmlEncode(requestKeywords)), UriKind.Relative);
 
+            // we are recreating the httpClient for each request (except of getting several pages of the same request) instead of keeping it for the lifetime of the application.
+            using var httpClient = _httpClientFactory.CreateClient(_searchEngineName);
+
             while (true)
             {
-                using var response = await _httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
+                using var response = await httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
 
                 response.EnsureSuccessStatusCode();
                 var rawResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
@@ -82,12 +85,7 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Core
                 uri = nextPageUri;
             }
 
-            return new SearchEngineResults(_searchEngine.GetName(), allParsedResults);
-        }
-
-        public void Dispose()
-        {
-            _httpClient.Dispose();
+            return new SearchEngineResults(_searchEngineName, allParsedResults);
         }
     }
 }

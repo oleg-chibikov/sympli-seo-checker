@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,12 +35,15 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
                 void RegisterSearchEngineResultsRetriever(SearchEngine searchEngine)
                 {
                     services.AddSingleton<ISearchEngineResultsRetriever>(
-                        serviceProvider => new SearchEngineResultsRetriever(
-                            serviceProvider.GetRequiredService<IHttpClientFactory>(),
-                            serviceProvider.GetRequiredService<IOptionsMonitor<SearchEngineRetrieverSettings>>(),
-                            serviceProvider.GetRequiredService<Func<SearchEngine, ISearchEngineResultsParser>>(),
-                            serviceProvider.GetRequiredService<Func<SearchEngine, IQueryProvider>>(),
-                            searchEngine));
+                        serviceProvider => new SearchEngineResultsRetrieverCachingDecorator(
+                            new SearchEngineResultsRetriever(
+                                serviceProvider.GetRequiredService<IHttpClientFactory>(),
+                                serviceProvider.GetRequiredService<IOptionsMonitor<SearchEngineRetrieverSettings>>(),
+                                serviceProvider.GetRequiredService<Func<SearchEngine, ISearchEngineResultsParser>>(),
+                                serviceProvider.GetRequiredService<Func<SearchEngine, IQueryProvider>>(),
+                                searchEngine),
+                            serviceProvider.GetRequiredService<IMemoryCache>(),
+                            serviceProvider.GetRequiredService<IOptionsMonitor<SearchEngineRetrieverSettings>>()));
                 }
 
                 services.AddSingleton<Func<SearchEngine, ISearchEngineResultsParser>>(
@@ -110,6 +114,7 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
 
             _ = services ?? throw new ArgumentNullException(nameof(services));
 
+            services.AddMemoryCache();
             services.AddControllers();
             services.AddCors(
                 options =>

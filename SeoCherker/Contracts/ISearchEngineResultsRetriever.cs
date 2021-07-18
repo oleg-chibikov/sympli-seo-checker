@@ -6,6 +6,8 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Contracts
 {
     public interface ISearchEngineResultsRetriever
     {
+        SearchEngine SearchEngine { get; }
+
         Task<SearchEngineResults> GetSearchResultsAsync(string requestKeywords, CancellationToken cancellationToken = default);
     }
 }

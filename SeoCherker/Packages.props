@@ -3,6 +3,7 @@
     <PackageReference Update="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
     <PackageReference Update="Swashbuckle.AspNetCore" Version="6.1.4" />
     <PackageReference Update="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Update="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="NUnit" Version="3.13.2" />

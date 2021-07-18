@@ -16,7 +16,7 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Tests
         static IOptionsMonitor<AppSettings> CreateMockOptionsMonitor(TimeSpan? cacheDuration = null)
         {
             var optionsMonitorMock = new Mock<IOptionsMonitor<AppSettings>>();
-            optionsMonitorMock.SetupGet(x => x.CurrentValue).Returns(new AppSettings { CacheDuration = cacheDuration ?? TimeSpan.FromHours(1) });
+            optionsMonitorMock.SetupGet(x => x.CurrentValue).Returns(new AppSettings());
             return optionsMonitorMock.Object;
         }
     }

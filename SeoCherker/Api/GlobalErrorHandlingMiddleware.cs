@@ -3,7 +3,6 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using OlegChibikov.SympliInterview.SeoChecker.Contracts.Data;
 
 namespace OlegChibikov.SympliInterview.SeoChecker.Api
 {
