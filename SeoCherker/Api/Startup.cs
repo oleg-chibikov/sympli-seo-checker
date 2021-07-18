@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,14 +35,14 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
                 {
                     services.AddSingleton<ISearchEngineResultsRetriever>(
                         serviceProvider => new SearchEngineResultsRetrieverCachingDecorator(
+                            serviceProvider.GetRequiredService<IOptionsMonitor<CachingSettings>>(),
+                            serviceProvider.GetRequiredService<ICache>(),
                             new SearchEngineResultsRetriever(
                                 serviceProvider.GetRequiredService<IHttpClientFactory>(),
                                 serviceProvider.GetRequiredService<IOptionsMonitor<SearchEngineRetrieverSettings>>(),
                                 serviceProvider.GetRequiredService<Func<SearchEngine, ISearchEngineResultsParser>>(),
                                 serviceProvider.GetRequiredService<Func<SearchEngine, IQueryProvider>>(),
-                                searchEngine),
-                            serviceProvider.GetRequiredService<IMemoryCache>(),
-                            serviceProvider.GetRequiredService<IOptionsMonitor<SearchEngineRetrieverSettings>>()));
+                                searchEngine)));
                 }
 
                 services.AddSingleton<Func<SearchEngine, ISearchEngineResultsParser>>(
@@ -70,8 +69,8 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
 
                 services.AddSingleton<IReferenceMatcher, ReferenceMatcher>();
 
-                RegisterSearchEngineResultsRetriever(SearchEngine.Bing);
                 RegisterSearchEngineResultsRetriever(SearchEngine.Google);
+                RegisterSearchEngineResultsRetriever(SearchEngine.Bing);
 
                 // Parsers and uriPartProviders are registered not as interfaces. They will be retrieved using the factory
                 services.AddSingleton<GoogleSearchResultsParser>();
@@ -83,6 +82,7 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
 
             void RegisterSettings()
             {
+                services.Configure<CachingSettings>(Configuration.GetSection(nameof(CachingSettings)));
                 services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
                 services.Configure<SearchEngineRetrieverSettings>(Configuration.GetSection(nameof(SearchEngineRetrieverSettings)));
             }
@@ -114,6 +114,7 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
 
             _ = services ?? throw new ArgumentNullException(nameof(services));
 
+            services.AddSingleton<ICache, MemoryCacheAdapter>();
             services.AddMemoryCache();
             services.AddControllers();
             services.AddCors(
@@ -152,15 +153,10 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
             }
 
             app.UseCors();
-
             app.UseMiddleware<GlobalErrorHandlingMiddleware>();
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(
                 endpoints =>
                 {
