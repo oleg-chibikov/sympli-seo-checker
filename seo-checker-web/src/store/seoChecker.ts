@@ -7,9 +7,15 @@ export interface SearchEngineReferencesRequestInfo {
   referenceToFind: string;
 }
 
+export interface SearchEngineResults {
+  searchEngine: string;
+  indexesInSearchResults: number[];
+  hasError: boolean;
+}
+
 export interface SeoCheckerState {
   searchEngineReferencesRequestInfo: SearchEngineReferencesRequestInfo;
-  results: number[];
+  results: SearchEngineResults[];
   isLoading: boolean;
   cancelTokenSource: CancelTokenSource | undefined;
 }
@@ -19,6 +25,7 @@ export enum SeoCheckerMutationTypes {
   SET_RESULTS = "SET_RESULTS",
   SET_IS_LOADING = "SET_IS_LOADING",
   SET_CANCEL_TOKEN_SOURCE = "SET_CANCEL_TOKEN_SOURCE",
+  RESET_RESULTS = "RESET_RESULTS",
 }
 
 export enum SeoCheckerActionTypes {
@@ -26,11 +33,18 @@ export enum SeoCheckerActionTypes {
 }
 
 export const mutations: MutationTree<SeoCheckerState> = {
-  [SeoCheckerMutationTypes.SET_RESULTS](state, results: number[]) {
+  [SeoCheckerMutationTypes.SET_RESULTS](state, results: SearchEngineResults[]) {
     state.results = results;
   },
   [SeoCheckerMutationTypes.SET_IS_LOADING](state, isLoading: boolean) {
     state.isLoading = isLoading;
+  },
+  [SeoCheckerMutationTypes.RESET_RESULTS](state) {
+    state.results = [];
+    state.searchEngineReferencesRequestInfo = {
+      keywords: "",
+      referenceToFind: "",
+    };
   },
   [SeoCheckerMutationTypes.SET_CANCEL_TOKEN_SOURCE](
     state,
@@ -65,7 +79,7 @@ export const actions: ActionTree<SeoCheckerState, RootState> = {
     commit(SeoCheckerMutationTypes.SET_CANCEL_TOKEN_SOURCE, cancelTokenSource);
     const uri = `${process.env.VUE_APP_SEO_CHECKER_API_URI}/SearchEngineReferences/${keywords}/${referenceToFind}`;
     try {
-      const response = await axios.get(uri, {
+      const response = await axios.get<SearchEngineResults[]>(uri, {
         cancelToken: cancelTokenSource.token,
       });
       commit(SeoCheckerMutationTypes.SET_RESULTS, response.data);

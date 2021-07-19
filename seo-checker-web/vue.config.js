@@ -1,3 +1,10 @@
 module.exports = {
-  transpileDependencies: ["vuex-persist"],
+  transpileDependencies: ["vuex-persist", "quasar"],
+
+  pluginOptions: {
+    quasar: {
+      importStrategy: "kebab",
+      rtlSupport: true,
+    },
+  },
 };

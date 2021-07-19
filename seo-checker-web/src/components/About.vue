@@ -1,7 +1,7 @@
 <template>
-  <div class="about">
-    <h1>SEO checker developed as a part of Sympli interview process</h1>
-    <h2>Author: {{ author }}</h2>
+  <div>
+    <div class="text-h6">SEO checker</div>
+    <div class="text-subtitle2">by {{ author }}</div>
   </div>
 </template>
 

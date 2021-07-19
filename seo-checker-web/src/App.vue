@@ -1,32 +1,27 @@
 <template>
-  <div>
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
-  </div>
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated class="glossy bg-secondary q-pa-sm">
+      <q-toolbar>
+        <q-toolbar-title><About /></q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+
+    <q-page-container>
+      <SeoChecker />
+    </q-page-container>
+  </q-layout>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import SeoChecker from "./components/SeoChecker.vue";
+import About from "./components/About.vue";
 
-#nav {
-  padding: 30px;
+export default {
+  name: "LayoutDefault",
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+  components: {
+    SeoChecker,
+    About,
+  },
+};
+</script>
