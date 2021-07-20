@@ -21,6 +21,7 @@ A web scraper that retrieves the data about references of a web address in the t
 * When opened for the first time it straight away gets the results for e-settlements and sympli.com.au.
 * API address is separated for dev and prod environments by .env files.
 * Subsequent Check button click cancels the current request.
+* Quasar framework with SASS support is used for visual styling.
 
 ## Possible improvements:
 
