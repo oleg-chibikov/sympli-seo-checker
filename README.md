@@ -31,6 +31,7 @@ A web scraper that retrieves the data about references of a web address in the t
 * If we need to continue scraping on a corporate level, we could leverage a distributed proxy like Crawlera or SmartProxy, or at least use a Captcha Solving service.
 * Add end-to-end tests (for manual testing - with real httpClient, or for CI testing - with mocked httpClient (integration tests should not depend on third party services)).
 * To add a new SearchEngine, we need to implement an IQueryProvider and an ISearchEngineResultsParser, register the httpClient and the necessary instances in Startup.cs.
+* Logging is now setup only to output data to Console. It could be improved by logging into ELK or at least to a file.
 
 ### Frontend
 * Finish the tests that are commented out because of Quasar library limitation with Vue3.
