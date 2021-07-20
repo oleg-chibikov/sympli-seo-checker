@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md" style="min-width: 100px">
+  <div class="q-pa-md">
     <RequestForm />
     <ResultsWrapper />
   </div>
