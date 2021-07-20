@@ -29,7 +29,6 @@ namespace OlegChibikov.SympliInterview.SeoChecker.Api
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
                 response.StatusCode = ex switch
                 {
