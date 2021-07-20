@@ -20,6 +20,7 @@ A web scraper that retrieves the data about references of a web address in the t
 * Local storage is used to keep the previous input after the browser is closed.
 * When opened for the first time it straight away gets the results for e-settlements and sympli.com.au.
 * API address is separated for dev and prod environments by .env files.
+* Subsequent Check button click cancels the current request.
 
 ## Possible improvements:
 
