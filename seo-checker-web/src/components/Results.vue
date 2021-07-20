@@ -1,4 +1,4 @@
-<template>
+<template v-if="results">
   <div>
     <SearchEngineResultsCard
       v-for="(result, index) in results"
@@ -10,9 +10,11 @@
 </template>
 
 <script lang="ts">
-import { SearchEngineResults } from "@/store/seoChecker";
 import { Options, Vue } from "vue-class-component";
 import { namespace } from "vuex-class";
+
+import { SearchEngineResults } from "@/store/seoChecker";
+
 import SearchEngineResultsCard from "./SearchEngineResultsCard.vue";
 
 const seoChecker = namespace("seoChecker");

@@ -17,10 +17,13 @@ module.exports = {
     ecmaVersion: 2020,
   },
 
+  plugins: ["simple-import-sort"],
+
   rules: {
     "no-console": "off",
     "no-debugger": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "simple-import-sort/imports": "error",
   },
 
   overrides: [

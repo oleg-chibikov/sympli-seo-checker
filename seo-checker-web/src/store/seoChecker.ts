@@ -1,5 +1,6 @@
 import axios, { CancelTokenSource } from "axios";
 import { ActionTree, Module, MutationTree } from "vuex";
+
 import { RootState } from ".";
 
 export interface SearchEngineReferencesRequestInfo {
@@ -14,10 +15,10 @@ export interface SearchEngineResults {
 }
 
 export interface SeoCheckerState {
-  searchEngineReferencesRequestInfo: SearchEngineReferencesRequestInfo;
-  results: SearchEngineResults[];
+  searchEngineReferencesRequestInfo?: SearchEngineReferencesRequestInfo;
+  results?: SearchEngineResults[];
   isLoading: boolean;
-  cancelTokenSource: CancelTokenSource | undefined;
+  cancelTokenSource?: CancelTokenSource;
 }
 
 export enum SeoCheckerMutationTypes {
@@ -40,15 +41,12 @@ export const mutations: MutationTree<SeoCheckerState> = {
     state.isLoading = isLoading;
   },
   [SeoCheckerMutationTypes.RESET_RESULTS](state) {
-    state.results = [];
-    state.searchEngineReferencesRequestInfo = {
-      keywords: "",
-      referenceToFind: "",
-    };
+    state.results = undefined;
+    state.searchEngineReferencesRequestInfo = undefined;
   },
   [SeoCheckerMutationTypes.SET_CANCEL_TOKEN_SOURCE](
     state,
-    cancelTokenSource: CancelTokenSource | undefined
+    cancelTokenSource?: CancelTokenSource
   ) {
     state.cancelTokenSource = cancelTokenSource;
   },
@@ -59,6 +57,12 @@ export const mutations: MutationTree<SeoCheckerState> = {
     state.searchEngineReferencesRequestInfo = searchEngineReferencesRequestInfo;
   },
 };
+
+export const GetSearchEngineReferencesUri = (
+  keywords: string,
+  referenceToFind: string
+): string =>
+  `${process.env.VUE_APP_SEO_CHECKER_API_URI}/SearchEngineReferences/${keywords}/${referenceToFind}`;
 
 export const actions: ActionTree<SeoCheckerState, RootState> = {
   async [SeoCheckerActionTypes.REQUEST_DATA](
@@ -77,7 +81,7 @@ export const actions: ActionTree<SeoCheckerState, RootState> = {
     commit(SeoCheckerMutationTypes.SET_IS_LOADING, true);
     const cancelTokenSource = axios.CancelToken.source();
     commit(SeoCheckerMutationTypes.SET_CANCEL_TOKEN_SOURCE, cancelTokenSource);
-    const uri = `${process.env.VUE_APP_SEO_CHECKER_API_URI}/SearchEngineReferences/${keywords}/${referenceToFind}`;
+    const uri = GetSearchEngineReferencesUri(keywords, referenceToFind);
     try {
       const response = await axios.get<SearchEngineResults[]>(uri, {
         cancelToken: cancelTokenSource.token,
@@ -98,17 +102,19 @@ export const actions: ActionTree<SeoCheckerState, RootState> = {
   },
 };
 
+export const initialState: SeoCheckerState = {
+  results: undefined,
+  isLoading: false,
+  cancelTokenSource: undefined,
+  searchEngineReferencesRequestInfo: {
+    keywords: "e-settlements",
+    referenceToFind: "sympli.com.au",
+  },
+};
+
 const SeoChecker: Module<SeoCheckerState, RootState> = {
   namespaced: true,
-  state: {
-    results: [],
-    isLoading: false,
-    cancelTokenSource: undefined,
-    searchEngineReferencesRequestInfo: {
-      keywords: "e-settlements",
-      referenceToFind: "sympli.com.au",
-    },
-  },
+  state: initialState,
   mutations: mutations,
   actions: actions,
 };

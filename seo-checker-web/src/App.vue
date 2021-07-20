@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import SeoChecker from "./components/SeoChecker.vue";
 import About from "./components/About.vue";
+import SeoChecker from "./components/SeoChecker.vue";
 
 export default {
   name: "LayoutDefault",

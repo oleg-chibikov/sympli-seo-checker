@@ -1,6 +1,8 @@
 <template>
   <q-card class="text-white q-my-md">
-    <q-card-section>
+    <q-card-section
+      :class="searchEngineResults.hasError ? 'bg-negative' : undefined"
+    >
       <div class="text-h6">{{ searchEngineResults.searchEngine }}</div>
 
       <q-separator dark></q-separator>
@@ -17,9 +19,10 @@
 </template>
 
 <script lang="ts">
-import { SearchEngineResults } from "@/store/seoChecker";
 import { Vue } from "vue-class-component";
 import { Prop } from "vue-property-decorator";
+
+import { SearchEngineResults } from "@/store/seoChecker";
 
 export default class SearchEngineResultsCard extends Vue {
   @Prop()
